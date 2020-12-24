@@ -36,7 +36,7 @@ public class SessionFilter implements Filter {
     @Override
     public void destroy() {
         LOGGER.traceEntry();
-        LOGGER.debug("{}: Successfully destroyed filter", LOG_MSG_TAG);
+        LOGGER.info("{}: Successfully destroyed filter", LOG_MSG_TAG);
         LOGGER.traceExit();
     }
 }
