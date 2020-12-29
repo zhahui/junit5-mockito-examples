@@ -49,6 +49,7 @@
         <mockito.version>3.6.28</mockito.version>
         <assertJ.version>3.18.1</assertJ.version>
         <log4j2.version>2.14.0</log4j2.version>
+        <apache-commons-lang3.version>3.11</apache-commons-lang3.version>
     </properties>
 
     <dependencies>
@@ -85,6 +86,11 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${apache-commons-lang3.version}</version>
         </dependency>
     </dependencies>
 

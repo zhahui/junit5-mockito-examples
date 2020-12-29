@@ -36,12 +36,16 @@ import net.huizha.examples.filters.FilterException;
  */
 class SessionFilterStaticMockTest {
     private static final String JNDI_OIDC_SESSION_MANAGEMENT_CONFIG = "java:comp/env/config/OidcSessionManagementConfig";
+    private static final String FAKED_BASE_URL = "https://faked-url";
+    private static final String FAKED_VALIDATE_SESSION_CONTEXTPATH = "faked-validate-session-context-path";
+    private static final String FAKED_REFRESH_SESSION_CONTEXTPATH = "faked-refresh-session-context-path";
     // Class under test
     private SessionFilter filterToTest;
 
     private static Logger mockedLogger;
     private FilterConfig mockedFilterConfig;
     private InitialContext mockedContext;
+    private OidcSessionManagementConfig mockedOidcSessionManagementConfig;
 
     @BeforeAll
     static void setUpBeforeAll() {
@@ -52,6 +56,7 @@ class SessionFilterStaticMockTest {
     void setUpBeforeEach() {
         mockedFilterConfig = mock(FilterConfig.class);
         mockedContext = mock(InitialContext.class);
+        mockedOidcSessionManagementConfig = mock(OidcSessionManagementConfig.class);
     }
 
     @AfterEach
@@ -136,9 +141,9 @@ class SessionFilterStaticMockTest {
             }).isInstanceOf(FilterException.class).hasCauseInstanceOf(NamingException.class)
                     .hasCauseInstanceOf(NoInitialContextException.class)
                     .hasMessageContaining("javax.naming.NoInitialContextException");
-            then(mockedLogger).should(times(1)).error(
-                    eq(String.format("Error occurred when looking up the named object: %s", JNDI_OIDC_SESSION_MANAGEMENT_CONFIG)),
-                    any(NamingException.class));
+            then(mockedLogger).should(times(1))
+                    .error(eq(String.format("Error occurred when looking up the named object: %s",
+                            JNDI_OIDC_SESSION_MANAGEMENT_CONFIG)), any(NamingException.class));
         }
     }
 
@@ -160,6 +165,105 @@ class SessionFilterStaticMockTest {
                 filterToTest.init(mockedFilterConfig);
             }).isInstanceOf(FilterException.class).hasMessageMatching(erroMsg);
             then(mockedLogger).should(times(1)).error(erroMsg);
+        }
+    }
+
+    @Test
+    void init_ShouldThrowException_WhenBaseUrlIsNull() throws NamingException {
+        try (MockedStatic<LogManager> mockedLogManager = mockStatic(LogManager.class)) {
+            mockedLogManager.when(() -> {
+                LogManager.getLogger(SessionFilter.class);
+            }).thenReturn(mockedLogger);
+
+            filterToTest = new SessionFilter();
+            // Mock context so that lookup() can be mocked
+            filterToTest.setInitialContext(mockedContext);
+
+            given(mockedContext.lookup(JNDI_OIDC_SESSION_MANAGEMENT_CONFIG))
+                    .willReturn(mockedOidcSessionManagementConfig);
+            given(mockedOidcSessionManagementConfig.getBaseUrl()).willReturn(null);
+
+            assertThatThrownBy(() -> {
+                filterToTest.init(mockedFilterConfig);
+            }).isInstanceOf(FilterException.class).hasMessageMatching("baseUrl is null or empty");
+        }
+    }
+
+    @Test
+    void init_ShouldThrowException_WhenValidateSessionContextPathIsNull() throws NamingException {
+        try (MockedStatic<LogManager> mockedLogManager = mockStatic(LogManager.class)) {
+            mockedLogManager.when(() -> {
+                LogManager.getLogger(SessionFilter.class);
+            }).thenReturn(mockedLogger);
+
+            filterToTest = new SessionFilter();
+            // Mock context so that lookup() can be mocked
+            filterToTest.setInitialContext(mockedContext);
+
+            given(mockedContext.lookup(JNDI_OIDC_SESSION_MANAGEMENT_CONFIG))
+                    .willReturn(mockedOidcSessionManagementConfig);
+            given(mockedOidcSessionManagementConfig.getBaseUrl()).willReturn(FAKED_BASE_URL);
+            given(mockedOidcSessionManagementConfig.getValidateSessionContextPath()).willReturn(null);
+
+            assertThatThrownBy(() -> {
+                filterToTest.init(mockedFilterConfig);
+            }).isInstanceOf(FilterException.class).hasMessageMatching("validateSessionContextPath is null or empty");
+        }
+    }
+
+    @Test
+    void init_ShouldThrowException_WhenRefreshSessionContextPathIsNull() throws NamingException {
+        try (MockedStatic<LogManager> mockedLogManager = mockStatic(LogManager.class)) {
+            mockedLogManager.when(() -> {
+                LogManager.getLogger(SessionFilter.class);
+            }).thenReturn(mockedLogger);
+
+            filterToTest = new SessionFilter();
+            // Mock context so that lookup() can be mocked
+            filterToTest.setInitialContext(mockedContext);
+
+            given(mockedContext.lookup(JNDI_OIDC_SESSION_MANAGEMENT_CONFIG))
+                    .willReturn(mockedOidcSessionManagementConfig);
+            given(mockedOidcSessionManagementConfig.getBaseUrl()).willReturn(FAKED_BASE_URL);
+            given(mockedOidcSessionManagementConfig.getValidateSessionContextPath())
+                    .willReturn(FAKED_VALIDATE_SESSION_CONTEXTPATH);
+            given(mockedOidcSessionManagementConfig.getRefreshSessionContextPath()).willReturn(null);
+
+            assertThatThrownBy(() -> {
+                filterToTest.init(mockedFilterConfig);
+            }).isInstanceOf(FilterException.class).hasMessageMatching("refreshSessionContextPath is null or empty");
+        }
+    }
+
+    @Test
+    void init_ShouldWork_WhenContextLookUpSucceeded() throws NamingException {
+        try (MockedStatic<LogManager> mockedLogManager = mockStatic(LogManager.class)) {
+            mockedLogManager.when(() -> {
+                LogManager.getLogger(SessionFilter.class);
+            }).thenReturn(mockedLogger);
+
+            filterToTest = new SessionFilter();
+            // Mock context so that lookup() can be mocked
+            filterToTest.setInitialContext(mockedContext);
+
+            given(mockedContext.lookup(JNDI_OIDC_SESSION_MANAGEMENT_CONFIG))
+                    .willReturn(mockedOidcSessionManagementConfig);
+            given(mockedOidcSessionManagementConfig.getBaseUrl()).willReturn(FAKED_BASE_URL);
+            given(mockedOidcSessionManagementConfig.getValidateSessionContextPath())
+                    .willReturn(FAKED_VALIDATE_SESSION_CONTEXTPATH);
+            given(mockedOidcSessionManagementConfig.getRefreshSessionContextPath())
+                    .willReturn(FAKED_REFRESH_SESSION_CONTEXTPATH);
+
+            filterToTest.init(mockedFilterConfig);
+
+            then(mockedLogger).should(times(1)).info(
+                    "OIDC session management configuration parameters: baserUrl={}, validateSessionContextPath={}, refreshSessionContextPath={}",
+                    FAKED_BASE_URL, FAKED_VALIDATE_SESSION_CONTEXTPATH, FAKED_REFRESH_SESSION_CONTEXTPATH);
+            then(mockedLogger).should(times(1)).info("Successfully initialized filter");
+            then(mockedLogger).should(times(1)).traceExit();
+            assertThat(filterToTest.getBaseUrl()).isNotBlank().isEqualTo(FAKED_BASE_URL);
+            assertThat(filterToTest.getValidateSessionContextPath()).isNotBlank().isEqualTo(FAKED_VALIDATE_SESSION_CONTEXTPATH);
+            assertThat(filterToTest.getRefreshSessionContextPath()).isNotBlank().isEqualTo(FAKED_REFRESH_SESSION_CONTEXTPATH);
         }
     }
 }
