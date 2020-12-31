@@ -1,5 +1,7 @@
 package net.huizha.examples.requestresponse;
 
+import javax.servlet.http.HttpSession;
+
 /**
  * Defines an object to provide client request information to a resource.
  *
@@ -9,5 +11,10 @@ package net.huizha.examples.requestresponse;
  *
  */
 public interface Request {
-
+    /**
+     * Returns the current session associated with this request, or if the request does not have a session, creates one.
+     *
+     * @return the HttpSession associated with this request
+     */
+    public HttpSession getSession();
 }
