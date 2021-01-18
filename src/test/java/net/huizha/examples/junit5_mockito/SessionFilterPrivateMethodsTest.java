@@ -94,5 +94,4 @@ class SessionFilterPrivateMethodsTest {
             assertThat((Boolean) method.invoke(filterToTest, mockedHttpSession)).isEqualTo(shouldRefresh);
         }
     }
-
 }

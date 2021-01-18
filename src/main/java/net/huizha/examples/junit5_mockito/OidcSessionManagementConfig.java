@@ -10,6 +10,25 @@ public class OidcSessionManagementConfig {
     private String baseUrl;
     private String validateSessionContextPath;
     private String refreshSessionContextPath;
+    private String oidcClientId;
+
+    /**
+     * Get session management base URL.
+     *
+     * @return the base URL to set
+     */
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    /**
+     * Set session management base URL.
+     *
+     * @param baseUrl the base URL
+     */
+    public void setBaseUrl(String baseUrl) {
+        this.baseUrl = baseUrl;
+    }
 
     /**
      * Get session validation context path.
@@ -48,20 +67,20 @@ public class OidcSessionManagementConfig {
     }
 
     /**
-     * Get session management base URL.
+     * Get OIDC client ID.
      *
-     * @return the base URL to set
+     * @return the OIDC client ID
      */
-    public String getBaseUrl() {
-        return baseUrl;
+    public String getOidcClientId() {
+        return oidcClientId;
     }
 
     /**
-     * Set session management base URL.
+     * Set OIDC client ID.
      *
-     * @param baseUrl the base URL
+     * @param oidcClientId the OIDC client ID to set
      */
-    public void setBaseUrl(String baseUrl) {
-        this.baseUrl = baseUrl;
+    public void setOidcClientId(String oidcClientId) {
+        this.oidcClientId = oidcClientId;
     }
 }

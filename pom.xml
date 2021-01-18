@@ -51,6 +51,7 @@
         <log4j2.version>2.14.0</log4j2.version>
         <apache-commons-lang3.version>3.11</apache-commons-lang3.version>
         <javax-servlet-api.version>4.0.1</javax-servlet-api.version>
+        <fluent-hc.version>4.5.13</fluent-hc.version>
     </properties>
 
     <dependencies>
@@ -98,6 +99,11 @@
             <artifactId>javax.servlet-api</artifactId>
             <version>${javax-servlet-api.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>fluent-hc</artifactId>
+            <version>${fluent-hc.version}</version>
         </dependency>
     </dependencies>
 
